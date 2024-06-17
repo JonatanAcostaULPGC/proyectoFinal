@@ -1,0 +1,29 @@
+.expiredProduct {
+    color: red;
+    border-color: red;
+}
+
+.warningProduct {
+    color:  orange;
+    border-color: orange;
+}
+
+.okProduct {
+    color: green;
+    border-color: green;
+}
+
+
+ion-content {
+    --padding-bottom: 70px;
+}
+
+.favorite-container {
+    display: flex;
+    align-items: center;
+    margin-left: 8px; // Ajusta el espacio entre el texto y el ícono según sea necesario
+  }
+  
+  ion-icon {
+    margin-left: 5px;
+  }

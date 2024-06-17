@@ -1,0 +1,49 @@
+<app-header [isModal]="true" title="Lista de productos"></app-header>
+<ion-content>
+    
+
+
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <ion-list *ngIf="!loading">
+    <ion-item-sliding class="product-item" *ngFor="let p of products">
+      <ion-item>
+        <ion-avatar slot="start">
+          <img [src]="p.image" />
+        </ion-avatar>
+        <ion-label>
+          <div class="name">
+            {{p.name}}
+          </div>
+          <div class="data">
+            <strong>Fecha de caducidad: </strong>{{p.date  | date:'dd-MM-yyyy'}} <br>
+            <strong>Cantidad: </strong>{{p.units}} <br>
+            <ion-button fill="clear" slot="end" (click)="addFavourite(p)" slot="end" class="favorite-container">
+              <span>{{ p.priority ? 'Favorito' : 'Pulsa para agregar a favoritos' }}</span>
+              <ion-icon [name]="p.priority ? 'star' : 'star-outline'"
+                [style.color]="p.priority ? 'blue' : 'black'"></ion-icon>
+            </ion-button>
+          </div>
+          <ion-chip mode="ios" outline="true" [ngClass]="getDateDifference(p.date)" style="pointer-events: none;">
+            <ion-label>
+              {{ getDateDifference(p.date) === 'expiredProduct'
+              ? 'Producto caducado' : (getDateDifference(p.date) === 'warningProduct'
+              ? 'Producto próximo a caducar' : 'Producto OK') }}
+            </ion-label>
+          </ion-chip>
+        </ion-label>
+      </ion-item>
+      <ion-item-options>
+        <ion-item-option color="danger" (click)="alertDeleteFromList(p)">
+          <ion-icon class="option-btn" name="trash-outline"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+
+
+  </ion-list>
+
+
+</ion-content>
