@@ -3,6 +3,9 @@ export interface User {
     email: string,
     password: string,
     name: string,
-    image: string
+    image?: string,
+    userToken?: string
 
 }
+
+export type UserModel = User;

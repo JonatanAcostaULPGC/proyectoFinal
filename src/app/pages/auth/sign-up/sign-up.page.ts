@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { User } from 'src/app/models/user.model';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { UtilsService } from 'src/app/services/utils.service';
+import { PushNotifications, PushNotificationToken } from '@capacitor/push-notifications';
 
 
 @Component({
@@ -17,6 +18,7 @@ export class SignUpPage implements OnInit {
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required]),
     name: new FormControl('', [Validators.required, Validators.minLength(4)]),
+    userToken: new FormControl(''), // Añadir el campo userToken al formulario
 
   });
 
@@ -24,6 +26,28 @@ export class SignUpPage implements OnInit {
   utilsSvc = inject(UtilsService);
 
   ngOnInit() {
+    this.getToken();
+  }
+
+  async getToken() {
+    const permission = await PushNotifications.requestPermissions();
+    console.log(permission);
+    if (permission.receive === 'granted') {
+      await PushNotifications.register();
+
+      PushNotifications.addListener('registration',
+        (token: PushNotificationToken) => {
+          this.form.controls['userToken'].setValue(token.value); // Asignar el token al campo userToken
+          console.log(token.value);
+        }
+      );
+
+      PushNotifications.addListener('registrationError',
+        (error: any) => {
+          console.error('Error on registration: ', error);
+        }
+      );
+    }
   }
 
   async submit() {

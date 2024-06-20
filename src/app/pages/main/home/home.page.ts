@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { User } from 'firebase/auth';
+import { UserModel } from 'src/app/models/user.model';
 import { Product } from 'src/app/models/product.model';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { UtilsService } from 'src/app/services/utils.service';
@@ -10,8 +11,10 @@ import {
   ActionPerformed,
   PushNotificationSchema,
   PushNotifications,
+  PushNotificationToken,
   Token,
 } from '@capacitor/push-notifications';
+
 
 @Component({
   selector: 'app-home',
@@ -28,41 +31,42 @@ export class HomePage implements OnInit {
   loading: boolean = false;
 
   ngOnInit() {
-    console.log('Initializing HomePage');
+    console.log("hola");
+    this.updateUserToken();
+  }
 
-    // Request permission to use push notifications
-    // iOS will prompt user and return if they granted permission or not
-    // Android will just grant without prompting
-    PushNotifications.requestPermissions().then(result => {
-      if (result.receive === 'granted') {
-        // Register with Apple / Google to receive push via APNS/FCM
-        PushNotifications.register();
-      } else {
-        // Show some error
+
+  async updateUserToken() {
+    const user = await this.utilsSvc.getFromLocalStorage('user') as UserModel;
+    console.log(user);
+
+    if (user) {
+      const permission = await PushNotifications.requestPermissions();
+      console.log(permission);
+      if (permission.receive === 'granted') {
+        await PushNotifications.register();
+
+        PushNotifications.addListener('registration',
+          async (token: PushNotificationToken) => {
+            const userToken = token.value;
+            user.userToken = userToken;
+
+            // Actualizar el token del usuario en Firestore
+            const path = `users/${user.uid}`;
+            await this.firebaseSvc.updateDocument(path, { userToken: userToken });
+
+            // Guardar el usuario actualizado en el almacenamiento local
+            await this.utilsSvc.saveInLocalStorage('user', user);
+          }
+        );
+
+        PushNotifications.addListener('registrationError',
+          (error: any) => {
+            console.error('Error on registration: ', error);
+          }
+        );
       }
-    });
-
-    PushNotifications.addListener('registration', (token: Token) => {
-      alert('Push registration success, token: ' + token.value);
-    });
-
-    PushNotifications.addListener('registrationError', (error: any) => {
-      alert('Error on registration: ' + JSON.stringify(error));
-    });
-
-    PushNotifications.addListener(
-      'pushNotificationReceived',
-      (notification: PushNotificationSchema) => {
-        alert('Push received: ' + JSON.stringify(notification));
-      },
-    );
-
-    PushNotifications.addListener(
-      'pushNotificationActionPerformed',
-      (notification: ActionPerformed) => {
-        alert('Push action performed: ' + JSON.stringify(notification));
-      },
-    );
+    }
   }
 
   doRefresh(event) {
