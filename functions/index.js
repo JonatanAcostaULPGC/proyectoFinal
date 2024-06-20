@@ -5,9 +5,16 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 admin.initializeApp();
 
-exports.checkExpiredProducts = functions.pubsub.schedule("every 24 hours").onRun(async (context) => {
+
+
+exports.checkExpiredProducts = functions.pubsub.schedule("every 1440 minutes").onRun(async (context) => {
   try {
     const db = admin.firestore();
+    const settingsDoc = await db.collection('settings').doc('notifications').get();
+    if (!settingsDoc.exists || !settingsDoc.data().enabled) {
+      console.log('Las notificaciones están desactivadas.');
+      return null;
+    }
     const now = admin.firestore.Timestamp.now();
     const sevenDaysFromNow = admin.firestore.Timestamp.fromMillis(
       now.toMillis() + 7 * 24 * 60 * 60 * 1000
@@ -29,12 +36,6 @@ exports.checkExpiredProducts = functions.pubsub.schedule("every 24 hours").onRun
       const userToken = userDoc.data().userToken;
 
       if (userToken) {
-        // Validar el formato del token (opcional pero recomendado)
-        if (!userToken.startsWith('AAA')) {
-          console.error(`Token inválido para el usuario ${userId}: ${userToken}`);
-          continue;
-        }
-
         // Obtener todos los productos del usuario
         const productsSnapshot = await db.collection(`users/${userId}/products`).get();
 
