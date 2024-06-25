@@ -31,7 +31,6 @@ export class HomePage implements OnInit {
   loading: boolean = false;
 
   ngOnInit() {
-    console.log("hola");
     this.updateUserToken();
   }
 

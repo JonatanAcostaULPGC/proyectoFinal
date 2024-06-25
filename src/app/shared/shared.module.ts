@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AddUpdateProductComponent } from './components/add-update-product/add-update-product.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
+import { TermsConditionsComponent } from './components/terms-conditions/terms-conditions.component';
 
 
 
@@ -16,7 +17,8 @@ import { ProductListComponent } from './components/product-list/product-list.com
     CustomInputComponent,
     LogoComponent,
     AddUpdateProductComponent,
-    ProductListComponent
+    ProductListComponent,
+    TermsConditionsComponent
   ],
   exports: [
     HeaderComponent, 
@@ -24,7 +26,8 @@ import { ProductListComponent } from './components/product-list/product-list.com
     LogoComponent,
     ReactiveFormsModule,
     AddUpdateProductComponent,
-    ProductListComponent
+    ProductListComponent,
+    TermsConditionsComponent
     
   ],
   imports: [

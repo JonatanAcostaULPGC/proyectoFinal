@@ -4,6 +4,7 @@ import { Product } from 'src/app/models/product.model';
 import { User } from 'src/app/models/user.model';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { UtilsService } from 'src/app/services/utils.service';
+import { TermsConditionsComponent } from 'src/app/shared/components/terms-conditions/terms-conditions.component';
 
 @Component({
   selector: 'app-profile',
@@ -64,6 +65,12 @@ export class ProfilePage implements OnInit {
       loading.dismiss();
     })
 
+    
+  }
+  async openTermsAndConditionModal() {
+    let success = await this.utilsSvc.presentModal({
+      component: TermsConditionsComponent,
+    });
   }
 
 

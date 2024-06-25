@@ -46,7 +46,6 @@ exports.checkExpiredProducts = functions.pubsub.schedule("every 1440 minutes").o
             const product = productDoc.data();
             if (isExpiredOrExpiring(product.date)) {
               hasExpiredOrExpiringProducts = true;
-              console.log('Producto:', product);
             }
           });
 

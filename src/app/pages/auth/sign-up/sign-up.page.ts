@@ -31,14 +31,12 @@ export class SignUpPage implements OnInit {
 
   async getToken() {
     const permission = await PushNotifications.requestPermissions();
-    console.log(permission);
     if (permission.receive === 'granted') {
       await PushNotifications.register();
 
       PushNotifications.addListener('registration',
         (token: PushNotificationToken) => {
           this.form.controls['userToken'].setValue(token.value); // Asignar el token al campo userToken
-          console.log(token.value);
         }
       );
 
