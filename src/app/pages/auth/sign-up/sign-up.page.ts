@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { User } from 'src/app/models/user.model';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { UtilsService } from 'src/app/services/utils.service';
+import { Capacitor } from '@capacitor/core';
 import { PushNotifications, PushNotificationToken } from '@capacitor/push-notifications';
 
 
@@ -30,6 +31,7 @@ export class SignUpPage implements OnInit {
   }
 
   async getToken() {
+    if (Capacitor.isNativePlatform()) {
     const permission = await PushNotifications.requestPermissions();
     if (permission.receive === 'granted') {
       await PushNotifications.register();
@@ -46,6 +48,10 @@ export class SignUpPage implements OnInit {
         }
       );
     }
+  } else {
+    console.log('PushNotifications plugin is not implemented on web');
+  }
+  
   }
 
   async submit() {

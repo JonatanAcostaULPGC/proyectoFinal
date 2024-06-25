@@ -14,6 +14,8 @@ import {
   PushNotificationToken,
   Token,
 } from '@capacitor/push-notifications';
+import { Capacitor } from '@capacitor/core';
+
 
 
 @Component({
@@ -36,35 +38,38 @@ export class HomePage implements OnInit {
 
 
   async updateUserToken() {
-    const user = await this.utilsSvc.getFromLocalStorage('user') as UserModel;
-    console.log(user);
+    if (Capacitor.isNativePlatform()) {
+      const user = await this.utilsSvc.getFromLocalStorage('user') as UserModel;
+      console.log(user);
+      if (user) {
+        const permission = await PushNotifications.requestPermissions();
+        console.log(permission);
+        if (permission.receive === 'granted') {
+          await PushNotifications.register();
 
-    if (user) {
-      const permission = await PushNotifications.requestPermissions();
-      console.log(permission);
-      if (permission.receive === 'granted') {
-        await PushNotifications.register();
+          PushNotifications.addListener('registration',
+            async (token: PushNotificationToken) => {
+              const userToken = token.value;
+              user.userToken = userToken;
 
-        PushNotifications.addListener('registration',
-          async (token: PushNotificationToken) => {
-            const userToken = token.value;
-            user.userToken = userToken;
+              // Actualizar el token del usuario en Firestore
+              const path = `users/${user.uid}`;
+              await this.firebaseSvc.updateDocument(path, { userToken: userToken });
 
-            // Actualizar el token del usuario en Firestore
-            const path = `users/${user.uid}`;
-            await this.firebaseSvc.updateDocument(path, { userToken: userToken });
+              // Guardar el usuario actualizado en el almacenamiento local
+              await this.utilsSvc.saveInLocalStorage('user', user);
+            }
+          );
 
-            // Guardar el usuario actualizado en el almacenamiento local
-            await this.utilsSvc.saveInLocalStorage('user', user);
-          }
-        );
-
-        PushNotifications.addListener('registrationError',
-          (error: any) => {
-            console.error('Error on registration: ', error);
-          }
-        );
+          PushNotifications.addListener('registrationError',
+            (error: any) => {
+              console.error('Error on registration: ', error);
+            }
+          );
+        }
       }
+    } else {
+      console.log('PushNotifications plugin is not implemented on web');
     }
   }
 
