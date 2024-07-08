@@ -35,12 +35,19 @@ export class MainPage implements OnInit {
     this.router.events.subscribe((event: any) => {
       if (event.url) {
         this.currentPath = event.url;
+        console.log('Current Path:', this.currentPath);
       }
-    })
+    }, (error) => {
+      console.error('Error en la navegación:', error);
+    });
   }
 
   user(): User {
-    return this.utilsSvc.getFromLocalStorage('user');
+    const user = this.utilsSvc.getFromLocalStorage('user');
+    if (!user) {
+      console.error('No user found in local storage');
+    }
+    return user || { uid: '', email: '', password: '', name: 'Usuario', image: '' };
   }
 
   signOut() {
