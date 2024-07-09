@@ -22,8 +22,8 @@ Este proyecto es una aplicación móvil desarrollada con Angular, Ionic y Fireba
 1. **Clona el repositorio:**
 
     ```bash
-    git clone https://github.com/tu-usuario/tu-repositorio.git
-    cd tu-repositorio
+    git clone https://github.com/JonatanAcostaULPGC/proyectoFinal.git
+    cd proyectoFinal
     ```
 
 2. **Instala las dependencias:**
