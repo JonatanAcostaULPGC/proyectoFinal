@@ -57,5 +57,3 @@ Este proyecto es una aplicación móvil desarrollada con Angular, Ionic y Fireba
 
 4. **Lista de Compra:**
     - Los usuarios pueden ver y editar una lista de compra basada en los alimentos próximos a caducar.
-
-## Estructura del Proyecto
