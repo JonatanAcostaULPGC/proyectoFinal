@@ -1,4 +1,4 @@
-# Gestión del Desperdicio de Alimentos
+# SmartPantry
 
 ## Descripción
 
